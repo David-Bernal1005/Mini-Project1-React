@@ -28,7 +28,7 @@ export default function Card() {
 
   return (
     <div
-      className={`max-w-sm mx-auto p-6 shadow-md rounded-lg mt-5 transition duration-300 ${darkMode ? 'bg-gray-801' : 'bg-white'}`}
+      className={`max-w-sm mx-auto p-6 shadow-md rounded-lg mt-5 transition duration-300 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}
     >
       <img
         src="https://i.pravatar.cc/150?img=3"
@@ -50,7 +50,7 @@ export default function Card() {
       </p>
       <button
         onClick={toggleTheme}
-        className={`mt-4 px-4  py-2 rounded shadow-md ${darkMode ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-801'} transition duration-300  `}
+        className={`mt-4 px-4  py-2 rounded shadow-md ${darkMode ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'} transition duration-300  `}
       >
         CAMBIAR TEMA
       </button>
