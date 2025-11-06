@@ -1,0 +1,60 @@
+name: Sync deploy branches
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  contents: write
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_BRANCH: ${{ secrets.VERCEL_BRANCH }}
+      NETLIFY_BRANCH: ${{ secrets.NETLIFY_BRANCH }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:   
+          fetch-depth: 0
+
+      - name: Configure git for push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: Push to Vercel branch (if configured)
+        run: |
+          if [ -n "${VERCEL_BRANCH}" ]; then
+            echo "Pushing HEAD to branch: ${VERCEL_BRANCH}"
+            git push origin HEAD:refs/heads/${VERCEL_BRANCH} --force
+          else
+            echo "VERCEL_BRANCH not set, skipping"
+          fi
+        shell: bash
+
+      - name: Push to Netlify branch (if configured)
+        run: |
+          if [ -n "${NETLIFY_BRANCH}" ]; then
+            echo "Pushing HEAD to branch: ${NETLIFY_BRANCH}"
+            git push origin HEAD:refs/heads/${NETLIFY_BRANCH} --force
+          else
+            echo "NETLIFY_BRANCH not set, skipping"
+          fi
+        shell: bash
+
+      - name: Push to default main branch (fallback)
+        run: |
+          if [ -z "${VERCEL_BRANCH}" ] && [ -z "${NETLIFY_BRANCH}" ]; then
+            echo "No target branches configured via secrets; pushing to 'main' as fallback"
+            git push origin HEAD:refs/heads/main --force
+          else
+            echo "At least one target branch configured; skipping fallback"
+          fi
+        shell: bash
+
+      - name: Done
+        run: echo "Sync complete"
